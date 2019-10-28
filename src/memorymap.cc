@@ -149,11 +149,13 @@ private:
 	static NAN_METHOD(Read) {
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
 		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
-		if (data + info[0]->Uint32Value() > obj->endPtr_) {
+		uint32_t len = info[0]->Uint32Value();
+		if (data + len > obj->endPtr_) {
 			Nan::ThrowError("Read out of bounds.");
 			return;
 		}
-		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, info[0]->Uint32Value());
+		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
+		obj->pos_ += (DWORD) len;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 

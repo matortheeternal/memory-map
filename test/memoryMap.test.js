@@ -75,6 +75,12 @@ describe('MemoryMap', () => {
             expect(buf.toString('ascii')).toBe('abcd');
         });
 
+        it('should advance the position', () => {
+            memoryMap.setPos(0);
+            memoryMap.read(4);
+            expect(memoryMap.getPos()).toBe(4);
+        });
+
         it('should throw an error if read is out of bounds', () => {
             let outOfBoundsError = /^Read out of bounds\.$/;
             expect(() => memoryMap.read(99999)).toThrow(outOfBoundsError);

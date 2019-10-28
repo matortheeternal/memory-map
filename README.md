@@ -13,18 +13,26 @@ npm i matortheeternal/memory-map --save
 const MemoryMap = require('memory-map');
 const path = require('path');
 
-let filePath = path.resolve('./package.json'); // loads package.json in the current directory
+// loads package.json in the current directory
+let filePath = path.resolve('./package.json');
 let memoryMap = new MemoryMap(filePath);
-console.log(memoryMap.getSize()); // logs the file's size in bytes
 
-// logs the first four characters of the file
-let str = memoryMap.read(4).toString('ascii');
-console.log(str);
+// gets the file's size in bytes
+let fileSize = memoryMap.getSize();
+console.log(fileSize);
+
+// reads the first four characters of the file
+let buf = memoryMap.read(4);
+console.log(buf.toString('ascii'));
+
+// reads the characters from position 4 to position 14 in the file
+buf = memoryMap.read(10); 
+console.log(buf.toString('ascii'));
 
 // jumps to byte position 20 in the file
 memoryMap.setPos(20); 
 
-// logs the characters from position 20 to position 30 in the file
-str = memoryMap.read(10).toString('ascii'); 
-console.log(str);
+// reads the characters from position 20 to position 30 in the file
+buf = memoryMap.read(10); 
+console.log(str.toString('ascii')); 
 ```
