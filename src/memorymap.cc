@@ -3,6 +3,20 @@
 #include "fileapi.h"
 #include "memoryapi.h"
 
+std::wstring to_utf16(const Nan::Utf8String& str) {
+    const char* text = *str;
+    size_t length = static_cast<size_t>(str.length());
+    if (text == nullptr || length == 0) return {};
+    const int lengthRequired = ::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), nullptr, 0);
+    if (lengthRequired > 0) {
+        std::wstring converted;
+        converted.resize(static_cast<size_t>(lengthRequired));
+        ::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR) converted.data(), lengthRequired);
+        return converted;
+    }
+    return {};
+}
+
 std::string GetLastErrorAsString() {
 	DWORD errorMessageID = ::GetLastError();
 	if (errorMessageID == 0)
@@ -36,9 +50,10 @@ public:
 	}
 
 private:
-	explicit MemoryMap(const std::string& filePath) : filePath_(filePath) {
-		fileHandle_ = CreateFile(
-			filePath_.c_str(),
+	explicit MemoryMap(const Nan::Utf8String& filePath) {
+        std::wstring filePathW = to_utf16(filePath);
+		fileHandle_ = CreateFileW(
+			filePathW.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ,
 			NULL,
@@ -85,28 +100,15 @@ private:
 	}
 
 	~MemoryMap() {
-		if (viewPtr_ != NULL) {
-			UnmapViewOfFile(viewPtr_);
-			viewPtr_ = NULL;
-		}
-
-		if (mapHandle_ != NULL) {
-			CloseHandle(mapHandle_);
-			mapHandle_ = NULL;
-		}
-
-		if (fileHandle_ != NULL) {
-			CloseHandle(fileHandle_);
-			fileHandle_ = NULL;
-		}
+		if (viewPtr_) UnmapViewOfFile(viewPtr_);
+		if (mapHandle_) CloseHandle(mapHandle_);
+		if (fileHandle_) CloseHandle(fileHandle_);
 	}
 
 	static NAN_METHOD(New) {
 		if (info.IsConstructCall()) {
 			Nan::Utf8String utf8_value(info[0]);
-			int len = utf8_value.length();
-			std::string filePath(*utf8_value, len);
-			MemoryMap *obj = new MemoryMap(filePath);
+			MemoryMap *obj = new MemoryMap(utf8_value);
 			obj->Wrap(info.This());
 			info.GetReturnValue().Set(info.This());
 		} else {
@@ -160,7 +162,6 @@ private:
 		return my_constructor;
 	}
 
-	std::string filePath_;
 	DWORD pos_ = 0;
 	DWORD fileSize_ = 0;
 	HANDLE fileHandle_ = nullptr;

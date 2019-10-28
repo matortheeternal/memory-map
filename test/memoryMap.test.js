@@ -15,6 +15,13 @@ describe('MemoryMap', () => {
             expect(memoryMap).toBeDefined();
             expect(memoryMap).toBeInstanceOf(MemoryMap);
         });
+
+        it('should work with utf8 characters in path', () => {
+            let filePath = path.resolve('./test/resources/ファイル');
+            memoryMap = new MemoryMap(filePath);
+            expect(memoryMap).toBeDefined();
+            expect(memoryMap).toBeInstanceOf(MemoryMap);
+        });
     });
 
     describe('getSize', () => {
