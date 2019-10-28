@@ -1,0 +1,23 @@
+{
+  "name": "memory-map",
+  "description": "Native addon which uses the windows api to memory map files.",
+  "version": "1.0.0",
+  "author": "Mator",
+  "copyright": "© 2019, Mator",
+  "repository": "https://github.com/matortheeternal/memory-map",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "configure": "node-gyp configure",
+    "build": "node-gyp build",
+    "test": "jest --bail"
+  },
+  "devDependencies": {
+    "node-gyp": "^3.8.0",
+    "jest": "^23.5.0"
+  },
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.0.5"
+  }
+}
