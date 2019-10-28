@@ -13,8 +13,8 @@
     "test": "jest --bail"
   },
   "devDependencies": {
-    "node-gyp": "^3.8.0",
-    "jest": "^23.5.0"
+    "jest": "^25.0.0",
+    "node-gyp": "^3.8.0"
   },
   "dependencies": {
     "bindings": "^1.2.1",
