@@ -6,13 +6,14 @@
   "copyright": "© 2019, Mator",
   "repository": "https://github.com/matortheeternal/memory-map",
   "license": "MIT",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "configure": "node-gyp configure",
     "build": "node-gyp build",
     "test": "jest --bail"
   },
   "devDependencies": {
+    "@types/node": "^12.12.8",
     "jest": "^25.0.0",
     "node-gyp": "^3.8.0"
   },
