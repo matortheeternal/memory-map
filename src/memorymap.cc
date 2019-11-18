@@ -4,17 +4,17 @@
 #include "memoryapi.h"
 
 std::wstring to_utf16(const Nan::Utf8String& str) {
-    const char* text = *str;
-    size_t length = static_cast<size_t>(str.length());
-    if (text == nullptr || length == 0) return {};
-    const int lengthRequired = ::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), nullptr, 0);
-    if (lengthRequired > 0) {
-        std::wstring converted;
-        converted.resize(static_cast<size_t>(lengthRequired));
-        ::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR) converted.data(), lengthRequired);
-        return converted;
-    }
-    return {};
+	const char* text = *str;
+	size_t length = static_cast<size_t>(str.length());
+	if (text == nullptr || length == 0) return {};
+	const int lengthRequired = ::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), nullptr, 0);
+	if (lengthRequired > 0) {
+		std::wstring converted;
+		converted.resize(static_cast<size_t>(lengthRequired));
+		::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR) converted.data(), lengthRequired);
+		return converted;
+	}
+	return {};
 }
 
 std::string GetLastErrorAsString() {
@@ -51,7 +51,7 @@ public:
 
 private:
 	explicit MemoryMap(const Nan::Utf8String& filePath) {
-        std::wstring filePathW = to_utf16(filePath);
+		std::wstring filePathW = to_utf16(filePath);
 		fileHandle_ = CreateFileW(
 			filePathW.c_str(),
 			GENERIC_READ,
