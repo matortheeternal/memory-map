@@ -1,7 +1,7 @@
 {
   "name": "memory-map",
   "description": "Native addon which uses the windows api to memory map files.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Mator",
   "copyright": "© 2019, Mator",
   "repository": "https://github.com/matortheeternal/memory-map",
