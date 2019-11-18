@@ -37,13 +37,14 @@ public:
 	static NAN_MODULE_INIT(Init) {
 		v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
 		tpl->SetClassName(Nan::New("MemoryMap").ToLocalChecked());
-		tpl->InstanceTemplate()->SetInternalFieldCount(5);
+		tpl->InstanceTemplate()->SetInternalFieldCount(6);
 
 		Nan::SetPrototypeMethod(tpl, "getHandle", GetHandle);
 		Nan::SetPrototypeMethod(tpl, "setPos", SetPos);
 		Nan::SetPrototypeMethod(tpl, "getPos", GetPos);
 		Nan::SetPrototypeMethod(tpl, "getSize", GetSize);
 		Nan::SetPrototypeMethod(tpl, "read", Read);
+		Nan::SetPrototypeMethod(tpl, "readUntil", ReadUntil);
 
 		constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 		Nan::Set(target, Nan::New("MemoryMap").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
@@ -156,6 +157,27 @@ private:
 		}
 		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
 		obj->pos_ += (DWORD) len;
+		info.GetReturnValue().Set(buf.ToLocalChecked());
+	}
+
+	static NAN_METHOD(ReadUntil) {
+		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
+		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
+		uint32_t len = 0;
+		v8::Local<v8::Object> bytes = info[0]->ToObject();
+		const char* bufData = node::Buffer::Data(bytes);
+		size_t bufLength = node::Buffer::Length(bytes);
+		const char* e = data;
+		while (memcmp(e, bufData, bufLength) != 0) {
+			len += bufLength;
+			e += bufLength;
+			if (e + bufLength > obj->endPtr_) {
+				Nan::ThrowError("Read out of bounds.");
+				return;
+			}
+		}
+		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
+		obj->pos_ += (DWORD) len + bufLength;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
