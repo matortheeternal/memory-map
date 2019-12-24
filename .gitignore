@@ -2,3 +2,6 @@ node_modules
 build/
 .idea
 .vs
+test/resources/1K
+test/resources/1M
+test/resources/1G
