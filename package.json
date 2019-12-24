@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/node": "^12.12.8",
     "jest": "^25.0.0",
+    "microtime": "^3.0.0",
     "node-gyp": "^3.8.0"
   },
   "dependencies": {
