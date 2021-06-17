@@ -11,7 +11,7 @@ std::wstring to_utf16(const Nan::Utf8String& str) {
 	if (lengthRequired > 0) {
 		std::wstring converted;
 		converted.resize(static_cast<size_t>(lengthRequired));
-		::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR) converted.data(), lengthRequired);
+		::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR)converted.data(), lengthRequired);
 		return converted;
 	}
 	return {};
@@ -109,10 +109,11 @@ private:
 	static NAN_METHOD(New) {
 		if (info.IsConstructCall()) {
 			Nan::Utf8String utf8_value(info[0]);
-			MemoryMap *obj = new MemoryMap(utf8_value);
+			MemoryMap* obj = new MemoryMap(utf8_value);
 			obj->Wrap(info.This());
 			info.GetReturnValue().Set(info.This());
-		} else {
+		}
+		else {
 			const int argc = 1;
 			v8::Local<v8::Value> argv[argc] = { info[0] };
 			v8::Local<v8::Function> cons = Nan::New(constructor());
@@ -127,7 +128,7 @@ private:
 
 	static NAN_METHOD(SetPos) {
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
-		DWORD newPos = info[0]->Uint32Value();
+		DWORD newPos = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 		if (newPos > obj->fileSize_) {
 			Nan::ThrowError("Position out of bounds.");
 			return;
@@ -150,13 +151,13 @@ private:
 	static NAN_METHOD(Read) {
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
 		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
-		uint32_t len = info[0]->Uint32Value();
+		uint32_t len = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 		if (data + len > obj->endPtr_) {
 			Nan::ThrowError("Read out of bounds.");
 			return;
 		}
 		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
-		obj->pos_ += (DWORD) len;
+		obj->pos_ += (DWORD)len;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
@@ -164,7 +165,13 @@ private:
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
 		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
 		uint32_t len = 0;
-		v8::Local<v8::Object> bytes = info[0]->ToObject();
+
+		v8::Local<v8::Object> bytes;
+		if (!info[0]->ToObject(Nan::GetCurrentContext()).ToLocal(&bytes)) {
+			Nan::ThrowError("Bad object was passed.");
+			return;
+		}
+
 		const char* bufData = node::Buffer::Data(bytes);
 		size_t bufLength = node::Buffer::Length(bytes);
 		const char* e = data;
@@ -177,11 +184,11 @@ private:
 			}
 		}
 		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
-		obj->pos_ += (DWORD) len + bufLength;
+		obj->pos_ += (DWORD)len + bufLength;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
-	static inline Nan::Persistent<v8::Function> & constructor() {
+	static inline Nan::Persistent<v8::Function>& constructor() {
 		static Nan::Persistent<v8::Function> my_constructor;
 		return my_constructor;
 	}
