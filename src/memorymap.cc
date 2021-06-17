@@ -183,7 +183,7 @@ private:
 			}
 		}
 		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
-		obj->pos_ += (DWORD)len + bufLength;
+		obj->pos_ += (DWORD) len + bufLength;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
