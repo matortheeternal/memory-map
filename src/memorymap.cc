@@ -11,7 +11,7 @@ std::wstring to_utf16(const Nan::Utf8String& str) {
 	if (lengthRequired > 0) {
 		std::wstring converted;
 		converted.resize(static_cast<size_t>(lengthRequired));
-		::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR)converted.data(), lengthRequired);
+		::MultiByteToWideChar(CP_UTF8, 0, text, static_cast<int>(length), (LPWSTR) converted.data(), lengthRequired);
 		return converted;
 	}
 	return {};
