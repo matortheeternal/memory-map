@@ -127,7 +127,7 @@ private:
 
 	static NAN_METHOD(SetPos) {
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
-		DWORD newPos = info[0]->Uint32Value();
+		DWORD newPos = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 		if (newPos > obj->fileSize_) {
 			Nan::ThrowError("Position out of bounds.");
 			return;
@@ -150,7 +150,7 @@ private:
 	static NAN_METHOD(Read) {
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
 		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
-		uint32_t len = info[0]->Uint32Value();
+		uint32_t len = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 		if (data + len > obj->endPtr_) {
 			Nan::ThrowError("Read out of bounds.");
 			return;
@@ -164,7 +164,13 @@ private:
 		MemoryMap* obj = Nan::ObjectWrap::Unwrap<MemoryMap>(info.Holder());
 		const char* data = static_cast<char*>(obj->viewPtr_) + obj->pos_;
 		uint32_t len = 0;
-		v8::Local<v8::Object> bytes = info[0]->ToObject();
+
+		v8::Local<v8::Object> bytes;
+		if (!info[0]->ToObject(Nan::GetCurrentContext()).ToLocal(&bytes)) {
+			Nan::ThrowError("Bad object was passed.");
+			return;
+		}
+
 		const char* bufData = node::Buffer::Data(bytes);
 		size_t bufLength = node::Buffer::Length(bytes);
 		const char* e = data;
