@@ -156,7 +156,7 @@ private:
 			return;
 		}
 		Nan::MaybeLocal<v8::Object> buf = Nan::CopyBuffer(data, len);
-		obj->pos_ += (DWORD)len;
+		obj->pos_ += (DWORD) len;
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
@@ -187,7 +187,7 @@ private:
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
-	static inline Nan::Persistent<v8::Function> &constructor() {
+	static inline Nan::Persistent<v8::Function> & constructor() {
 		static Nan::Persistent<v8::Function> my_constructor;
 		return my_constructor;
 	}
