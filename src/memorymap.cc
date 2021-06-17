@@ -188,7 +188,7 @@ private:
 		info.GetReturnValue().Set(buf.ToLocalChecked());
 	}
 
-	static inline Nan::Persistent<v8::Function>& constructor() {
+	static inline Nan::Persistent<v8::Function> &constructor() {
 		static Nan::Persistent<v8::Function> my_constructor;
 		return my_constructor;
 	}
