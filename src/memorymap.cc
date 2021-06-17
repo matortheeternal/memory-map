@@ -109,11 +109,10 @@ private:
 	static NAN_METHOD(New) {
 		if (info.IsConstructCall()) {
 			Nan::Utf8String utf8_value(info[0]);
-			MemoryMap* obj = new MemoryMap(utf8_value);
+			MemoryMap *obj = new MemoryMap(utf8_value);
 			obj->Wrap(info.This());
 			info.GetReturnValue().Set(info.This());
-		}
-		else {
+		} else {
 			const int argc = 1;
 			v8::Local<v8::Value> argv[argc] = { info[0] };
 			v8::Local<v8::Function> cons = Nan::New(constructor());
